@@ -3,16 +3,12 @@ from flask_restful import Resource, Api
 from dbconnect import ConnectDB, CloseDB
 from flask_bcrypt import Bcrypt
 import hashlib
+from common.app_setting import responseCode, responseText, detail
 
 todos = {}
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
-
-responseCode="response_code"
-responseText="response_text"
-sessionToken="session_token"
-detail="detail"
 
 class ChangePassword(Resource):
     def post(self):
@@ -42,28 +38,30 @@ class ChangePassword(Resource):
         else:
             new_password = ""
 
+        conn, cur = ConnectDB()
         try:
-            conn, cur = ConnectDB()
-            cur.execute("select therapist_id, login_password from therapist where login_id = %s", [username])
+            cur.execute("select t.therapist_id, t.login_password from therapist t left join ther_session ts on t.therapist_id = ts.therapist_id " +
+            "where lower(login_id) = lower(trim(%s)) and coalesce(suspended,0) = 0 " +
+            "and ts.user_token = (select user_token from ther_session where user_token = %s and logout_time is null) " +
+            "limit 1", [username, session_token])
             data = cur.fetchone()
 
-            print("DATA", data)
             if (data != None):
                 therapist_id = data[0]
                 therapist_pass = data[1]
 
                 if (bcrypt.check_password_hash(therapist_pass, password)):
-                    pw_hash = bcrypt.generate_password_hash(new_password)
+                    pw_hash = bcrypt.generate_password_hash(new_password).decode('utf-8')
 
                     cur.execute("update therapist set login_password = %s where therapist_id = %s", [pw_hash, therapist_id])
 
-                    conn.commit()
                     result = {responseCode:"200", responseText:"Success"}
                 else:
                     result = {responseCode:"401", responseText:"Wrong Password"}
             else:
                 result = {responseCode:"401", responseText:"Username undefined"}
 
+            conn.commit()
         except Exception as e:
             result = {responseCode:"404", responseText:"failed", detail:str(e)}
             conn.rollback()

@@ -1,14 +1,9 @@
 from flask import Flask, request
 from flask_restful import Resource, Api
 from dbconnect import ConnectDB, CloseDB
+from common.app_setting import responseCode, responseText, detail, responseList
 
 app = Flask(__name__)
-
-responseCode="response_code"
-responseText="response_text"
-responseList="response_list"
-sessionToken="session_token"
-detail="detail"
 
 class BookingList(Resource):
     def post(self):
@@ -27,32 +22,27 @@ class BookingList(Resource):
         else:
             device_id = ""
 
+        conn, cur = ConnectDB()
         try:
-            conn, cur = ConnectDB()
             if (username != "" and session_token != "" and device_id != ""):
-                
-                cur.execute("SELECT booking.booking_id, booking.booking_date, " +
-                "to_char(booking.booking_time::interval, 'HH24:MI'::text) AS booking_time, booking.guest_name, " +
-                "bt.therapist_id " +
-                "FROM booking " +
-                "inner join booking_therapist bt on booking.booking_id = bt.booking_id " +
-                "WHERE booking.booking_date = 'now'::text::date " +
-                    "and bt.therapist_id in (select therapist_id from therapist where login_id = %s) " +
-                "ORDER BY booking.booking_date, to_char(booking.booking_time::interval, 'HH24:MI'::text);", [username])
+                # FROM SP
+                cur.execute("select * from ther_get_booking_list(%s)", [session_token])
 
                 rows = []
                 data = []
 
                 for row in cur:
                     rows.append(row)
-                    booking_id = row[0]
-                    booking_date = row[1]
-                    booking_time = row[2]
-                    guest_name = row[3]
-                    therapist = row[4]
+                    arinv_id = row[0]
+                    booking_id = row[1]
+                    booking_date = row[2]
+                    booking_time = row[3]
+                    guest_name = row[4]
+                    therapist = row[5]
 
                     data.append({
-                        str("bk_id"):str(booking_id), str("bk_date"):str(booking_date), str("bk_time"):str(booking_time),
+                        str("arinv_id"):str(arinv_id), str("bk_id"):str(booking_id),
+                        str("bk_date"):str(booking_date), str("bk_time"):str(booking_time),
                         str("guest"):str(guest_name), str("therapist"):str(therapist)
                     })
 

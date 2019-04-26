@@ -1,14 +1,9 @@
 from flask import Flask, request
 from flask_restful import Resource, Api
 from dbconnect import ConnectDB, CloseDB
+from common.app_setting import responseCode, responseText, detail
 
 app = Flask(__name__)
-
-responseCode="response_code"
-responseText="response_text"
-responseList="response_list"
-sessionToken="session_token"
-detail="detail"
 
 class AddSession(Resource):
     def post(self):
@@ -37,10 +32,9 @@ class AddSession(Resource):
         else:
             quantity = ""
 
+        conn, cur = ConnectDB()
         try:
-            conn, cur = ConnectDB()
             seq = 1
-
             # GET SEQUENCE FROM ARINV ITEM
             cur.execute("select max(seq) from arinv_item where arinvoice_id = %s", [arinv_id])
             max_seq = cur.fetchone()[0]
@@ -60,11 +54,20 @@ class AddSession(Resource):
 
             cur.execute("insert into arinv_item (arinvoice_id, seq, item_id, quantity, unit_price, order_status) values (%s, %s, %s, %s, %s, %s)", [arinv_id, seq, item_id, quantity, unit_price, 1])
 
+            cur.execute('select item_group_id from item where item_id = %s',[item_id])
+            item_group = cur.fetchone()[0]
+
             # UPDATE MUST END TREATMENT TIME * 60 karena dirubah ke jam
             cur.execute("update arinv_therapist set " +
-                "must_end_treatment_time = (select must_end_treatment_time + interval '1h' * "
-                "(select sum(coalesce(duration::integer, 0)::numeric / 60) as sum from item where item_id = %s)) "
-                "where arinvoice_id = %s", [item_id, arinv_id])
+		    "must_end_treatment_time = (select begin_treatment_time + interval '1h' * " +
+            "(select sum(coalesce(duration::integer, 0)::numeric * ai.quantity / 60) as sum from arinv_item ai " +
+			"join item using(item_id) where item.item_group_id = %s and ai.arinvoice_id = %s) from arinv_therapist " +
+			"where arinvoice_id = %s) where arinvoice_id = %s", [item_group, arinv_id, arinv_id, arinv_id])
+
+            # cur.execute("update arinv_therapist set " +
+            #     "must_end_treatment_time = (select must_end_treatment_time + interval '1h' * "
+            #     "(select sum(coalesce(duration::integer, 0)::numeric / 60) as sum from item where item_id = %s)) "
+            #     "where arinvoice_id = %s", [item_id, arinv_id])
 
             # FUNCTION TO UPDATE PRICE ALL
             cur.execute("select update_price_all(%s)", [arinv_id])

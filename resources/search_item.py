@@ -2,14 +2,9 @@ from flask import Flask, request
 from flask_restful import Resource, Api
 from dbconnect import ConnectDB, CloseDB
 from common.rupiah import rupiah_format
+from common.app_setting import responseCode, responseList, responseText, detail
 
 app = Flask(__name__)
-
-responseCode="response_code"
-responseText="response_text"
-responseList="response_list"
-sessionToken="session_token"
-detail="detail"
 
 class SearchItem(Resource):
     def post(self):
@@ -40,10 +35,9 @@ class SearchItem(Resource):
         
         query = '%' + query + '%'
 
+        conn, cur = ConnectDB()
         try:
-            conn, cur = ConnectDB()
             if (username != "" and session_token != "" and device_id != ""):
-
                 cur.execute("select item.item_id, item.item_name, pi.unit_price from item " +
                 "inner join arinv a on a.arinvoice_id = %s " +
                 "inner join customer c on a.customer_id = c.customer_id " +

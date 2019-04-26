@@ -13,12 +13,12 @@ def ConnectDB():
     try:
         conn = psycopg2.connect(connectionString)
         cur = conn.cursor()
-        print("CONNECTING")
+        
         return conn, cur
     except:
         print("Error executing select")
 
 def CloseDB(conn, cur):
-    print("DB CLOSE, CONN CLOSE")
+    
     conn.close()
     cur.close()

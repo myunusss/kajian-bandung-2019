@@ -2,14 +2,9 @@ from flask import Flask, request, json
 from flask_restful import Resource, Api
 from dbconnect import ConnectDB, CloseDB
 from common.rupiah import rupiah_format
+from common.app_setting import responseCode, responseText, detail
 
 app = Flask(__name__)
-
-responseCode="response_code"
-responseText="response_text"
-responseList="response_list"
-sessionToken="session_token"
-detail="detail"
 
 class AddNewItem(Resource):
     def post(self):
@@ -38,15 +33,10 @@ class AddNewItem(Resource):
         else:
             arinv_id = ""
 
-        print("addnewitem", request.form)
-
         items = json.loads(items)
 
-        print("ITEMS", items)
-
+        conn, cur = ConnectDB()
         try:
-            conn, cur = ConnectDB()
-            
             for item in items:
                 item_id = item['it_id']
                 qty = item['qty']
@@ -66,9 +56,18 @@ class AddNewItem(Resource):
                 "and item_id = %s", [arinv_id, item_id])
                 unit_price = cur.fetchone()[0]
 
+                cur.execute("select therapist_id from ther_session where user_token = %s and logout_time is null", [session_token])
+                ther_id = cur.fetchone()[0]
+                
+                # cek default order status
+                cur.execute("select default_order_status from item_type it " +
+                "inner join item i on i.item_type_id = it.item_type_id " +
+                "where i.item_id = %s", [item_id])
+                def_order_stat = cur.fetchone()[0]
+
                 # INSERT TO ARINV ITEM
-                cur.execute("insert into arinv_item (arinvoice_id, seq, item_id, quantity, unit_price, order_status, description) " +
-                "values (%s, %s, %s, %s, %s, %s, %s)", [arinv_id, seq, item_id, qty, unit_price, 0, note])
+                cur.execute("insert into arinv_item (arinvoice_id, seq, item_id, quantity, unit_price, order_status, description, therapist_id) " +
+                "values (%s, %s, %s, %s, %s, %s, %s, %s)", [arinv_id, seq, item_id, qty, unit_price, def_order_stat, note, ther_id])
 
             # FUNCTION TO UPDATE PRICE ALL
             cur.execute("select update_price_all(%s)", [arinv_id])

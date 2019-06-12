@@ -1,7 +1,7 @@
 from flask import Flask, request
 from flask_restful import Resource, Api
 from dbconnect import ConnectDB, CloseDB
-from common.app_setting import responseCode, responseText, detail, URL_IMAGE
+from common.app_setting import responseCode, responseText, detail, URL_IMAGE, URL_REPORTS
 
 app = Flask(__name__)
 
@@ -113,7 +113,7 @@ class TherapistReport(Resource):
                 therapist_no = data[1]
                 therapist_name = data[2]
 
-                url_report = "http://192.168.1.221:8000/therapist/report?ther_id=" + str(therapist_id)
+                url_report = URL_REPORTS + str(therapist_id)
 
                 result = {responseCode:"200", responseText:"Success", detail:str(url_report)}
             else:

@@ -21,20 +21,20 @@ todos = [
 
 class Todo(Resource):
   def get(self, id):
-    conn, cur = ConnectDB()
-    hasil = ""
-    try:
-      cur.execute("select id_kajian, tanggal, deskripsi from kajian")
-      hasil = "Berhasil"
-    except Exception as e:
-      hasil = "Oopss"
-    finally:
-      CloseDB(conn, cur)
-    return hasil
-    # for todo in todos:
-    #   if(id == todo["id"]):
-    #     return todo, 200
-    # return "Item not found for the id: {}".format(id), 404
+    # conn, cur = ConnectDB()
+    # hasil = ""
+    # try:
+    #   cur.execute("select id_kajian, tanggal, deskripsi from kajian")
+    #   hasil = "Berhasil"
+    # except Exception as e:
+    #   hasil = "Oopss"
+    # finally:
+    #   CloseDB(conn, cur)
+    # return hasil
+    for todo in todos:
+      if(id == todo["id"]):
+        return todo, 200
+    return "Item not found for the id: {}".format(id), 404
 
     def put(self, id):
       for todo in todos:

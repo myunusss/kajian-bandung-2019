@@ -62,6 +62,11 @@ class UpdateTherapistStatus(Resource):
         else:
             status_id = ""
 
+        if (request.form.get("ther_id") != None):
+            ther_id = request.form.get("ther_id")
+        else:
+            ther_id = 0
+
         conn, cur = ConnectDB()
         try:
             # cur.execute("select therapist_id, therapist_status from therapist where login_id = %s", [username])
@@ -71,11 +76,16 @@ class UpdateTherapistStatus(Resource):
             # db_status_id = data[1]
 
             cur.execute("update therapist set therapist_status = %s where " +
-            "therapist_id in (select therapist_id from ther_session where user_token = %s " + 
-            "and logout_time is null)", [status_id, session_token])
+            "therapist_id = %s", [status_id, ther_id])
+
+            count = cur.rowcount
             
-            result = {responseCode:"200", responseText:"Success"}
-            conn.commit()
+            if (count != 0):
+                conn.commit()
+                result = {responseCode:"200", responseText:"Success"}
+            else :
+                conn.rollback()
+                result = {responseCode:"401", responseText:"Failed update / insert data"}
 
         except Exception as e:
             result = {responseCode:"404", responseText:"failed", detail:str(e)}

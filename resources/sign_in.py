@@ -33,6 +33,11 @@ class SignIn(Resource):
         else:
             user_token= ""
 
+        if (request.form.get("fcmtkn") != None):
+            fcm_token = request.form.get("fcmtkn")
+        else:
+            fcm_token= ""
+
         salt = "2m-6CN6C4QRe8=2Xep8G"
 
         conn, cur = ConnectDB()
@@ -60,7 +65,11 @@ class SignIn(Resource):
                     if (ther_id > 0):
                         valid_token = hashlib.md5(temp_str.encode('utf-8'))
 
-                        # pengecekan user token
+                        # update fcm token
+                        cur.execute("update therapist set fcm_client_token = %s " +
+                        "where therapist_id = %s", [fcm_token, ther_id])
+
+                        # pengecekan user token dari hp dengan api (bukan db)
                         if (user_token == valid_token.hexdigest()):
                             # pengecekan pertama pada session dan attendance berdasarkan user token(device_id)
                             cur.execute("select count(therapist_id) as session_count, " +

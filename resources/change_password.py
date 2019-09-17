@@ -54,14 +54,20 @@ class ChangePassword(Resource):
                     pw_hash = bcrypt.generate_password_hash(new_password).decode('utf-8')
 
                     cur.execute("update therapist set login_password = %s where therapist_id = %s", [pw_hash, therapist_id])
-
-                    result = {responseCode:"200", responseText:"Success"}
+                    
+                    count = cur.rowcount
+                    
+                    if (count != 0):
+                        conn.commit()
+                        result = {responseCode:"200", responseText:"Success"}
+                    else :
+                        conn.rollback()
+                        result = {responseCode:"401", responseText:"Failed update / insert data"}
                 else:
                     result = {responseCode:"401", responseText:"Wrong Password"}
             else:
                 result = {responseCode:"401", responseText:"Username undefined"}
 
-            conn.commit()
         except Exception as e:
             result = {responseCode:"404", responseText:"failed", detail:str(e)}
             conn.rollback()

@@ -57,3 +57,12 @@ six==1.4.1
 SQLAlchemy==1.2.15
 Werkzeug==0.14.1
 xattr==0.6.4
+
+# INSTALL INI DULU
+# flask_bcrypt
+# flask_restful
+# flask_cors
+# Flask
+# Flask-SQLAlchemy
+# SQLAlchemy
+# psycopg2

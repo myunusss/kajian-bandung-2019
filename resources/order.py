@@ -64,6 +64,17 @@ class GetRecentOrder(Resource):
                     cur.execute("select * from get_recent_order_status(%s, %s)", [0, arinv_id])
                     status_order = cur.fetchone()[0]
 
+                    if (status_order >= 1):
+                        new_ther_stat = 3
+                    else :
+                        new_ther_stat = 1
+                    
+                    cur.execute("update therapist set therapist_status = %s " +
+                        "where therapist_id in (select therapist_id from ther_session where user_token = %s " + 
+                        "and logout_time is null)", [new_ther_stat, session_token])
+
+                    conn.commit()
+
                     result = {
                         responseCode:"200", responseText:"Success", data:"notNull", str("arinv_id"):str(arinv_id),
                         str("invoice_time"):str(invoice_time), str("status_order"):str(status_order),
@@ -231,6 +242,6 @@ class DetailOrder(Resource):
         finally:
             CloseDB(conn, cur)
         
-        print(result)
+        # print(result)
 
         return result

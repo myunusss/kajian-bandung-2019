@@ -27,28 +27,37 @@ class AcceptOrder(Resource):
         else:
             arinvoice_id = ""
 
+        if (request.form.get("ther_id") != None):
+            ther_id = request.form.get("ther_id")
+        else:
+            ther_id = ""
+
         conn, cur = ConnectDB()
+
         try:
-            if (username != "" and session_token != "" and device_id != ""):
-                cur.execute("update arinv_therapist set accept_order_time = current_timestamp " +
-                "where arinvoice_id = %s and therapist_id in (select therapist_id from ther_session where user_token = %s " + 
-                "and logout_time is null)", [arinvoice_id, session_token])
+            cur.execute("update arinv_therapist set accept_order_time = current_timestamp " +
+            "where arinvoice_id = %s and therapist_id = %s", [arinvoice_id, ther_id])
 
-                # UPDATE ROOM STATUS OCCUPIED (3)
-                cur.execute("update room set room_status_id = %s " +
-                "where room_id in (select room_id from arinv where arinvoice_id = %s)", [3, arinvoice_id])
+            count = cur.rowcount
 
-                # UPDATE THERAPIST STATUS
-                cur.execute("update therapist set therapist_status = %s "
-                "where therapist_id in (select therapist_id from ther_session where user_token = %s " + 
-                "and logout_time is null)", [3, session_token])
+            # UPDATE THERAPIST STATUS
+            cur.execute("update therapist set therapist_status = %s "
+            "where therapist_id = %s", [3, ther_id])
 
+            count = count + cur.rowcount
+
+            # UPDATE ROOM STATUS OCCUPIED (3)
+            cur.execute("update room set room_status_id = %s " +
+            "where room_id in (select room_id from arinv where arinvoice_id = %s)", [3, arinvoice_id])
+
+            count = count + cur.rowcount
+
+            if (count > 2):
                 conn.commit()
-
                 result = {responseCode:"200", responseText:"Success"}
-            else:
-                result = {responseCode:"401", responseText:"Not valid token"}
-                
+            else :
+                conn.rollback()
+                result = {responseCode:"401", responseText:"Failed update data, please try again"}
         except Exception as e:
             result = {responseCode:"404", responseText:"failed", detail:str(e)}
             conn.rollback()
@@ -85,24 +94,50 @@ class AcceptAtRoom(Resource):
         else:
             room_code = ""
 
+        if (request.form.get("ther_id") != None):
+            ther_id = request.form.get("ther_id")
+        else:
+            ther_id = ""
+
         conn, cur = ConnectDB()
         try:
-            if (username != "" and session_token != "" and device_id != ""):
+            if (ther_id != "" and username != "" and session_token != "" and device_id != ""):
                 cur.execute("select qr_code from room r " +
                 "inner join arinv a on a.room_id = r.room_id " +
                 "where a.arinvoice_id = %s", [arinvoice_id])
                 data = cur.fetchone()[0]
 
                 if (data == room_code):
-                    cur.execute("update arinv_therapist set ready_at_room_time = current_timestamp " +
-                    "where arinvoice_id = %s and therapist_id in (select therapist_id from ther_session where user_token = %s " + 
-                    "and logout_time is null)", [arinvoice_id, session_token])
+                    title = 'Order Info'
+                    messageReady = username + " ready at room"
+                    module = 'Therapist'
+                    ch_id = 'cso_info'
 
-                    result = {responseCode:"200", responseText:"Success"}
+                    cur.execute("update arinv_therapist set ready_at_room_time = current_timestamp " +
+                    "where arinvoice_id = %s and therapist_id = %s", [arinvoice_id, ther_id])
+
+                    count = cur.rowcount
+
+                    # SEND NOTIF KE CSO
+                    cur.execute("select fcm_client_token from salesman " +
+                        "inner join cso_session using (salesman_id)"
+                        "where coalesce(disabled, 0) != 1 and fcm_client_token is not null order by login_time desc limit 1")
+                    v_data = cur.fetchall()
+
+                    for _data in v_data:
+                        c_token = _data[0]
+
+                        cur.execute("insert into fcm_notif (fcm_client_token, title, message, module, entry_time, rel_entity_id, sent, channel_id) " +
+                            "values (%s, %s, %s, %s, current_timestamp, %s, 0, %s)", [c_token, title, messageReady, module, ther_id, ch_id])
+
+                    if (count != 0):
+                        conn.commit()
+                        result = {responseCode:"200", responseText:"Success"}
+                    else :
+                        conn.rollback()
+                        result = {responseCode:"401", responseText:"Failed update data, please try again"}
                 else:
                     result = {responseCode:"401", responseText:"Room Tidak Sesuai"}
-                
-                conn.commit()
             else:
                 result = {responseCode:"401", responseText:"Not valid token"}
                 
@@ -137,16 +172,26 @@ class GuestAtRoom(Resource):
         else:
             arinvoice_id = ""
 
+        if (request.form.get("ther_id") != None):
+            ther_id = request.form.get("ther_id")
+        else:
+            ther_id = ""
+
         conn, cur = ConnectDB()
         try:
             if (username != "" and session_token != "" and device_id != ""):
                 
                 cur.execute("update arinv_therapist set guest_at_room_time = current_timestamp " +
                     "where arinvoice_id = %s", [arinvoice_id])
+                
+                count = cur.rowcount
 
-                conn.commit()
-
-                result = {responseCode:"200", responseText:"Success"}
+                if (count != 0):
+                    conn.commit()
+                    result = {responseCode:"200", responseText:"Success"}
+                else :
+                    conn.rollback()
+                    result = {responseCode:"401", responseText:"Failed update data, please try again"}
             else:
                 result = {responseCode:"401", responseText:"Not valid token"}
                 
@@ -181,6 +226,11 @@ class BeginTreatment(Resource):
         else:
             arinvoice_id = ""
 
+        if (request.form.get("ther_id") != None):
+            ther_id = request.form.get("ther_id")
+        else:
+            ther_id = ""
+
         conn, cur = ConnectDB()
         try:
             if (username != "" and session_token != "" and device_id != ""):
@@ -192,17 +242,27 @@ class BeginTreatment(Resource):
                     "LEFT JOIN arinv ar ON ar.arinvoice_id = ai.arinvoice_id " +
                     "WHERE ai.arinvoice_id = %s AND item.item_group_id = 1) " +
                     "from arinv_therapist " +
-                    "where arinvoice_id = %s and therapist_id in (select therapist_id from ther_session where user_token = %s " + 
-                    "and logout_time is null)) " +
-                "where arinvoice_id = %s", [arinvoice_id, arinvoice_id, session_token, arinvoice_id])
+                    "where arinvoice_id = %s and therapist_id = %s) " +
+                "where arinvoice_id = %s", [arinvoice_id, arinvoice_id, ther_id, arinvoice_id])
+
+                count = cur.rowcount
 
                 # UPDATE ROOM STATUS OCCUPIED (3)
                 cur.execute("update room set room_status_id = %s " +
                 "where room_id in (select room_id from arinv where arinvoice_id = %s)", [3, arinvoice_id])
 
-                conn.commit()
+                count = count + cur.rowcount
+    # insert log
+                myActions = "Begin Treatment by Therapist - " + username
+                cur.execute("insert into log_treatment (arinvoice_id, log_time, action) " +
+                "values (%s, current_timestamp, %s)", [arinvoice_id, myActions])
 
-                result = {responseCode:"200", responseText:"Success"}
+                if (count > 1):
+                    conn.commit()
+                    result = {responseCode:"200", responseText:"Success"}
+                else :
+                    conn.rollback()
+                    result = {responseCode:"401", responseText:"Failed update data, please try again"}
             else:
                 result = {responseCode:"401", responseText:"Not valid token"}
                 
@@ -236,24 +296,60 @@ class EndTreatment(Resource):
             arinvoice_id = request.form.get("arinvoice_id")
         else:
             arinvoice_id = ""
+        
+        if (request.form.get("ther_id") != None):
+            ther_id = request.form.get("ther_id")
+        else:
+            ther_id = 0
 
         conn, cur = ConnectDB()
         try:
             if (username != "" and session_token != "" and device_id != ""):
                 cur.execute("update arinv_therapist set end_treatment_time = current_timestamp " +
                 "where arinvoice_id = %s and end_treatment_time is null", [arinvoice_id])
+                
+                count = cur.rowcount
 
                 # UPDATE ROOM STATUS KE DIRTY
                 cur.execute("update room set room_status_id = %s " +
-                "where room_id in (select room_id from arinv where arinvoice_id = %s) and room_status_id = 3", [4, arinvoice_id])
+                "where room_id in (select room_id from arinv where arinvoice_id = %s)", [4, arinvoice_id])
+
+                count = count + cur.rowcount
 
                 # UPDATE THERAPIST STATUS
                 cur.execute("update therapist set therapist_status = %s "
-                "where therapist_id in (select therapist_id from arinv_therapist where arinvoice_id = %s) and therapist_status = 3", [1, arinvoice_id])
+                "where therapist_id in (select therapist_id from arinv_therapist where arinvoice_id = %s)", [1, arinvoice_id])
 
-                conn.commit()
+                count = count + cur.rowcount
 
-                result = {responseCode:"200", responseText:"Success"}
+                # insert log
+                myActions = "End Treatment by Therapist - " + username
+                cur.execute("insert into log_treatment (arinvoice_id, log_time, action) " +
+                "values (%s, current_timestamp, %s)", [arinvoice_id, myActions])
+
+                # SEND NOTIF KE CSO
+                cur.execute("select fcm_client_token from salesman " +
+                        "inner join cso_session using (salesman_id)"
+                        "where coalesce(disabled, 0) != 1 and fcm_client_token is not null order by login_time desc limit 1")
+                v_data = cur.fetchall()
+
+                title = 'Info'
+                messageEnd = username + " menyelesaikan treatment"
+                module = 'Therapist'
+                ch_id = 'cso_info'
+
+                for _data in v_data:
+                    c_token = _data[0]
+
+                    cur.execute("insert into fcm_notif (fcm_client_token, title, message, module, entry_time, rel_entity_id, sent, channel_id) " +
+                        "values (%s, %s, %s, %s, current_timestamp, %s, 0, %s)", [c_token, title, messageEnd, module, ther_id, ch_id])
+
+                if (count > 2):
+                    conn.commit()
+                    result = {responseCode:"200", responseText:"Success"}
+                else :
+                    conn.rollback()
+                    result = {responseCode:"401", responseText:"Failed update data, please try again"}
             else:
                 result = {responseCode:"401", responseText:"Not valid token"}
                 

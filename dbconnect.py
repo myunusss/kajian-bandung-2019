@@ -13,6 +13,8 @@ def ConnectDB():
     try:
         conn = psycopg2.connect(connectionString)
         cur = conn.cursor()
+
+        conn.autocommit=False
         
         return conn, cur
     except:

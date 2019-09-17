@@ -1,5 +1,4 @@
 from flask_restful import Resource
-from dbconnect import ConnectDB, CloseDB
 
 todos = [
   {

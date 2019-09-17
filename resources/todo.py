@@ -1,4 +1,5 @@
 from flask_restful import Resource
+from dbconnect import ConnectDB, CloseDB
 
 todos = [
   {
@@ -20,10 +21,16 @@ todos = [
 
 class Todo(Resource):
   def get(self, id):
-    for todo in todos:
-      if(id == todo["id"]):
-        return todo, 200
-    return "Item not found for the id: {}".format(id), 404
+    conn, cur = ConnectDB()
+    try:
+      cur.execute("select id_kajian, tanggal, deskripsi from kajian")
+      return "Berhasil"
+    except Exception as e:
+      return "Oopss"
+    # for todo in todos:
+    #   if(id == todo["id"]):
+    #     return todo, 200
+    # return "Item not found for the id: {}".format(id), 404
 
     def put(self, id):
       for todo in todos:

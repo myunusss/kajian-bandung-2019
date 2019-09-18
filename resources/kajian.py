@@ -7,10 +7,10 @@ class Kajian(Resource):
     conn, cur = ConnectDB()    
     try:
         cur.execute("select id_kajian, tanggal, deskripsi, nama_pemateri, poster_path " +
+        "from kajian " +
         "inner join kajian_pemateri using (id_kajian) " +
         "inner join kajian_poster using (id_kajian) " +
-        "inner join pemateri using (id_pemateri) " +
-        "from kajian")
+        "inner join pemateri using (id_pemateri)")
         data = []
         for row in cur:
             v_id = row[0]

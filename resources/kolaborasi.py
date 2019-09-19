@@ -4,7 +4,7 @@ from dbconnect import ConnectDB, CloseDB
 from common.app_setting import responseCode, responseList, responseText, detail, _id, nama, deskripsi, ig_akun, poster_path
 
 class Kolaborasi(Resource):
-  def get(self):
+  def post(self):
     if (request.form.get("session_token") != None):
         session_token = request.form.get("session_token")
     else:

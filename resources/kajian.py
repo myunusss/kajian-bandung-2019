@@ -1,5 +1,6 @@
 from flask_restful import Resource
 from dbconnect import ConnectDB, CloseDB
+from datetime import datetime
 from common.app_setting import responseCode, responseList, responseText, detail, _id, tanggal, deskripsi, pemateri, poster_path
 
 class Kajian(Resource):
@@ -25,6 +26,26 @@ class Kajian(Resource):
                 deskripsi:str(v_deskripsi),
                 pemateri:str(v_pemateri),
                 poster_path:str(v_poster_path)
+            })
+
+        result = {responseCode:"200", responseText:"success", responseList:data}
+    except Exception as e:
+        result = {responseCode:"404", responseText:"Not found", detail:str(e)}
+    finally:
+        CloseDB(conn, cur)
+    return result
+
+class ListKajian(Resource):
+  def get(self):
+    conn, cur = ConnectDB()
+    try:
+        cur.execute("select distinct(date(tanggal)) from kajian")
+        
+        for row in cur:
+            v_tanggal = row[0]
+
+            data.append({
+                tanggal:str(v_tanggal)
             })
 
         result = {responseCode:"200", responseText:"success", responseList:data}

@@ -1,10 +1,10 @@
 from flask_restful import Resource
 from dbconnect import ConnectDB, CloseDB
-from common.app_setting import responseCode, responseList, responseText, detail
+from common.app_setting import responseCode, responseList, responseText, detail, _id, tanggal, deskripsi, pemateri, poster_path
 
 class Kajian(Resource):
   def get(self):
-    conn, cur = ConnectDB()    
+    conn, cur = ConnectDB()
     try:
         cur.execute("select id_kajian, tanggal, deskripsi, nama_pemateri, poster_path " +
         "from kajian " +
@@ -20,11 +20,11 @@ class Kajian(Resource):
             v_poster_path = row[4]
 
             data.append({
-                str("id"):str(v_id),
-                str("tanggal"):str(v_tanggal),
-                str("deskripsi"):str(v_deskripsi),
-                str("pemateri"):str(v_pemateri),
-                str("poster_path"):str(v_poster_path)
+                _id:str(v_id),
+                tanggal:str(v_tanggal),
+                deskripsi:str(v_deskripsi),
+                pemateri:str(v_pemateri),
+                poster_path:str(v_poster_path)
             })
 
         result = {responseCode:"200", responseText:"success", responseList:data}

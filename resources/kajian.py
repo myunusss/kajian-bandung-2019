@@ -40,7 +40,7 @@ class ListKajian(Resource):
     conn, cur = ConnectDB()
     try:
         cur.execute("select distinct(date(tanggal)) from kajian")
-        
+        data = []
         for row in cur:
             v_tanggal = row[0]
 

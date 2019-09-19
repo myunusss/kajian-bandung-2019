@@ -1,9 +1,10 @@
 from flask import Flask, request
 from flask_restful import Resource
 from dbconnect import ConnectDB, CloseDB
-from common.app_setting import responseCode, responseList, responseText, detail, _id, nama, deskripsi, ig_akun, poster_path
+from datetime import datetime
+from common.app_setting import responseCode, responseList, responseText, detail, _id, deskripsi, poster_path, tanggal
 
-class Kolaborasi(Resource):
+class Quote(Resource):
   def get(self):
     if (request.form.get("session_token") != None):
         session_token = request.form.get("session_token")
@@ -13,21 +14,22 @@ class Kolaborasi(Resource):
     conn, cur = ConnectDB()
     try:
         if (session_token == '$2y$12$/Am4ByLydvLE4ra2pvGDUOkDWYRi5XObtfqH/SWpRJAnJY8/dzDsS'):
-            cur.execute("select id_kolaborasi, nama, poster_path, deskripsi, ig_akun from kolaborasi")
+            FMT_1 = '%Y-%m-%d'
+            date_now = str(datetime.now().strftime(FMT_1))
+
+            cur.execute("select id_quote, poster_path, deskripsi, tanggal from quote where date(tanggal) = %s", [date_now])
             data = []
             for row in cur:
                 v_id = row[0]
-                v_nama = row[1]
-                v_poster_path = row[2]
-                v_deskripsi = row[3]
-                v_ig_akun = row[4]
+                v_poster_path = row[1]
+                v_deskripsi = row[2]
+                v_tanggal = row[3]
 
                 data.append({
                     _id:str(v_id),
-                    nama:str(v_nama),
                     poster_path:str(v_poster_path),
                     deskripsi:str(v_deskripsi),
-                    ig_akun:str(v_ig_akun)
+                    tanggal:str(v_tanggal)
                 })
 
             result = {responseCode:"200", responseText:"success", responseList:data}

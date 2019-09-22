@@ -99,7 +99,7 @@ class ListKajian(Resource):
             #         text_month = "-";
             # }; 
 
-            cur.execute("select distinct(day(tanggal)) " + 
+            cur.execute("select distinct(date_part('day', tanggal)) as day_ " + 
             "from kajian " +
             "where extract(year from tanggal) = %s and extract(month from tanggal) = %s", [year, month])
             data = []

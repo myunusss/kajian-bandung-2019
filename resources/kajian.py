@@ -69,46 +69,19 @@ class ListKajian(Resource):
             month = str(now.strftime(FMT_2))
             day_name = str(now.strftime("%A"))
             month_name = str(now.strftime("%B"))
-            
-            # switch(month) { 
-            #     case '01': 
-            #         text_month = "Januari";
-            #     case '02': 
-            #         text_month = "Februari";
-            #     case '03':
-            #         text_month = "Maret";
-            #     case '04':
-            #         text_month = "April";
-            #     case '05':
-            #         text_month = "Mei";
-            #     case '06':
-            #         text_month = "Juni";
-            #     case '07':
-            #         text_month = "Juli";
-            #     case '08':
-            #         text_month = "Agustus";
-            #     case '09':
-            #         text_month = "September";
-            #     case '10':
-            #         text_month = "Oktober";
-            #     case '11':
-            #         text_month = "Nopember";
-            #     case '12':
-            #         text_month = "Desember";
-            #     default:
-            #         text_month = "-";
-            # }; 
 
-            cur.execute("select distinct(date_part('day', tanggal)) as day_ " + 
+            cur.execute("select distinct(date_part('day', tanggal)) as day_, distinct(date(tanggal)) as full_date " + 
             "from kajian " +
             "where extract(year from tanggal) = %s and extract(month from tanggal) = %s", [year, month])
             data = []
             for row in cur:
                 v_tanggal = row[0]
+                v_full_date = now[1]
 
                 data.append({
                     bulan: month_name,
-                    tanggal:str(int(v_tanggal))
+                    tanggal: str(int(v_tanggal)),
+                    full_date: str(v_full_date)
                 })
 
             result = {responseCode:"200", responseText:"success", responseList:data}

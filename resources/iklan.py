@@ -17,7 +17,7 @@ class Iklan(Resource):
             FMT_1 = '%Y-%m-%d'
             date_now = str(datetime.now().strftime(FMT_1))
 
-            cur.execute("select id_iklan, poster_path, deskripsi, from_date, to_date from iklan where date(from_date) >= %s and date(to_date) <= %s and aktif = 1", [date_now, date_now])
+            cur.execute("select id_iklan, poster_path, deskripsi, from_date, to_date from iklan where date(to_date) <= %s and aktif = 1", [date_now, date_now])
             data = []
             for row in cur:
                 v_id = row[0]

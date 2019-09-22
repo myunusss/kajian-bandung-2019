@@ -2,7 +2,7 @@ from flask import Flask, request
 from flask_restful import Resource
 from dbconnect import ConnectDB, CloseDB
 from datetime import datetime
-from common.app_setting import responseCode, responseList, responseText, detail, _id, deskripsi, poster_path, tanggal
+from common.app_setting import responseCode, responseList, responseText, detail, _id, deskripsi, poster_path, from_date, to_date
 
 class Iklan(Resource):
   def post(self):

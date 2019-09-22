@@ -9,8 +9,10 @@ api = Api(app)
 
 # api.add_resource(Todo, "/todo/<int:id>")
 api.add_resource(Kajian, "/kajian")
-api.add_resource(Kolaborasi, "/tim/kolaborasi")
 api.add_resource(ListKajian, "/list/kajian")
+api.add_resource(Kolaborasi, "/tim/kolaborasi")
+api.add_resource(Kajian, "/quote")
+api.add_resource(Kajian, "/iklan")
 
 if __name__ == "__main__":
   app.run()

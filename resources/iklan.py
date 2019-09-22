@@ -4,7 +4,7 @@ from dbconnect import ConnectDB, CloseDB
 from datetime import datetime
 from common.app_setting import responseCode, responseList, responseText, detail, _id, deskripsi, poster_path, tanggal
 
-class Quote(Resource):
+class Iklan(Resource):
   def post(self):
     if (request.form.get("session_token") != None):
         session_token = request.form.get("session_token")
@@ -17,19 +17,21 @@ class Quote(Resource):
             FMT_1 = '%Y-%m-%d'
             date_now = str(datetime.now().strftime(FMT_1))
 
-            cur.execute("select id_quote, poster_path, deskripsi, tanggal from quote where date(tanggal) = %s", [date_now])
+            cur.execute("select id_iklan, poster_path, deskripsi, from_date, to_date from iklan where date(from_date) >= %s and date(to_date) <= %s and aktif = 1", [date_now, date_now])
             data = []
             for row in cur:
                 v_id = row[0]
                 v_poster_path = row[1]
                 v_deskripsi = row[2]
-                v_tanggal = row[3]
+                v_from_date = row[3]
+                v_to_date = row[4]
 
                 data.append({
                     _id:str(v_id),
                     poster_path:str(v_poster_path),
                     deskripsi:str(v_deskripsi),
-                    tanggal:str(v_tanggal)
+                    from_date:str(v_from_date),
+                    to_date:str(v_to_date)
                 })
 
             result = {responseCode:"200", responseText:"success", responseList:data}

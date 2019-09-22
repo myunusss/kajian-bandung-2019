@@ -108,7 +108,7 @@ class ListKajian(Resource):
 
                 data.append({
                     bulan: month_name,
-                    tanggal:str(v_tanggal)
+                    tanggal:str(int(v_tanggal))
                 })
 
             result = {responseCode:"200", responseText:"success", responseList:data}

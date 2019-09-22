@@ -2,7 +2,7 @@ from flask import Flask, request
 from flask_restful import Resource
 from dbconnect import ConnectDB, CloseDB
 from datetime import datetime
-from common.app_setting import responseCode, responseList, responseText, detail, _id, tanggal, deskripsi, pemateri, poster_path
+from common.app_setting import responseCode, responseList, responseText, detail, _id, tanggal, deskripsi, pemateri, poster_path, bulan, hari
 
 class Kajian(Resource):
   def post(self):
@@ -62,10 +62,42 @@ class ListKajian(Resource):
     conn, cur = ConnectDB()
     try:
         if (session_token == '$2y$12$/Am4ByLydvLE4ra2pvGDUOkDWYRi5XObtfqH/SWpRJAnJY8/dzDsS'):
+            now = datetime.now()
             FMT_1 = '%Y'
-            year = str(datetime.now().strftime(FMT_1))
+            year = str(now.strftime(FMT_1))
             FMT_2 = '%m'
-            month = str(datetime.now().strftime(FMT_2))
+            month = str(now.strftime(FMT_2))
+            day_name = str(now.strftime("%A"))
+            month_name = str(now.strftime("%B"))
+            
+            # switch(month) { 
+            #     case '01': 
+            #         text_month = "Januari";
+            #     case '02': 
+            #         text_month = "Februari";
+            #     case '03':
+            #         text_month = "Maret";
+            #     case '04':
+            #         text_month = "April";
+            #     case '05':
+            #         text_month = "Mei";
+            #     case '06':
+            #         text_month = "Juni";
+            #     case '07':
+            #         text_month = "Juli";
+            #     case '08':
+            #         text_month = "Agustus";
+            #     case '09':
+            #         text_month = "September";
+            #     case '10':
+            #         text_month = "Oktober";
+            #     case '11':
+            #         text_month = "Nopember";
+            #     case '12':
+            #         text_month = "Desember";
+            #     default:
+            #         text_month = "-";
+            # }; 
 
             cur.execute("select distinct(date(tanggal)) " + 
             "from kajian " +
@@ -75,6 +107,7 @@ class ListKajian(Resource):
                 v_tanggal = row[0]
 
                 data.append({
+                    bulan: month_name,
                     tanggal:str(v_tanggal)
                 })
 

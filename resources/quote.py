@@ -17,22 +17,16 @@ class Quote(Resource):
             FMT_1 = '%Y-%m-%d'
             date_now = str(datetime.now().strftime(FMT_1))
 
-            cur.execute("select id_quote, poster_path, deskripsi, tanggal from quote where date(tanggal) = %s", [date_now])
-            data = []
-            for row in cur:
-                v_id = row[0]
-                v_poster_path = row[1]
-                v_deskripsi = row[2]
-                v_tanggal = row[3]
+            cur.execute("select id_quote, poster_path, deskripsi, tanggal from quote where date(tanggal) = %s limit 1", [date_now])
+            val = cur.fetchone()
+            
+            if (val != None):
+                v_id = val[0]
+                v_poster_path = val[1]
+                v_deskripsi = val[2]
+                v_tanggal = val[3]
 
-                data.append({
-                    _id:str(v_id),
-                    poster_path:str(v_poster_path),
-                    deskripsi:str(v_deskripsi),
-                    tanggal:str(v_tanggal)
-                })
-
-            result = {responseCode:"200", responseText:"success", responseList:data}
+            result = {responseCode:"200", responseText:"success", poster_path:v_poster_path}
         else:
             result = {responseCode:"401", responseText:"Ooppss..."}
     except Exception as e:

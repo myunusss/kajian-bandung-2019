@@ -70,7 +70,7 @@ class ListKajian(Resource):
             day_name = str(now.strftime("%A"))
             month_name = str(now.strftime("%B"))
 
-            cur.execute("select distinct(date_part('day', tanggal)) as day_, distinct(date(tanggal)) as full_date " + 
+            cur.execute("select distinct(date_part('day', tanggal)) as day_, date(tanggal) as full_date " + 
             "from kajian " +
             "where extract(year from tanggal) = %s and extract(month from tanggal) = %s", [year, month])
             data = []

@@ -76,7 +76,7 @@ class ListKajian(Resource):
             data = []
             for row in cur:
                 v_tanggal = row[0]
-                v_full_date = now[1]
+                v_full_date = row[1]
 
                 data.append({
                     bulan: month_name,

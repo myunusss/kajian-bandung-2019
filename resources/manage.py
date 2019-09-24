@@ -1,6 +1,7 @@
 from flask import Flask, request
 from flask_restful import Resource
 from dbconnect import ConnectDB, CloseDB
+from datetime import datetime
 from common.app_setting import responseCode, responseList, responseText, detail, _id
 
 class AddKajian(Resource):
@@ -9,26 +10,32 @@ class AddKajian(Resource):
         session_token = request.form.get("session_token")
     else:
         session_token = ""
+
     if (request.form.get("judul") != None):
         judul = request.form.get("judul")
     else:
         judul = ""
+
     if (request.form.get("tempat") != None):
         tempat = request.form.get("tempat")
     else:
         tempat = ""
+
     if (request.form.get("geo") != None):
         geo = request.form.get("geo")
     else:
         geo = ""
+
     if (request.form.get("deskripsi") != None):
         deskripsi = request.form.get("deskripsi")
     else:
         deskripsi = ""
+
     if (request.form.get("id_pemateri") != None):
         id_pemateri = request.form.get("id_pemateri")
     else:
         id_pemateri = ""
+
     if (request.form.get("poster_path") != None):
         poster_path = request.form.get("poster_path")
     else:

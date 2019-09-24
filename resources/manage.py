@@ -113,7 +113,7 @@ class AddKajian(Resource):
             cur.execute("insert into kajian_pemateri (id_kajian, id_pemateri) values (%s, %s)", [id_kajian, id_pemateri])
             cur.execute("insert into kajian_poster (id_kajian, poster_path) values (%s, %s)", [id_kajian, poster_path])
 
-            if (id_kajian !== None):
+            if (id_kajian != None):
                 conn.commit()
                 result = {responseCode:"200", responseText:"success", _id:str(id_kajian)}
             else:

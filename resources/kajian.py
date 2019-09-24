@@ -74,9 +74,9 @@ class DetailKajian(Resource):
             "inner join pemateri p using (id_pemateri) " +
             "where id_kajian = %s", [id_kajian])
             
-            data = []
+            row = cur.fetchone()
 
-            for row in cur:
+            if (row !== None):
                 v_id = row[0]
                 v_tanggal = row[1]
                 v_deskripsi = row[2]
@@ -85,17 +85,9 @@ class DetailKajian(Resource):
                 v_judul = row[6]
                 v_pemateri = row[7] + ' ' + row[3]
 
-                data.append({
-                    _id:str(v_id),
-                    tanggal:str(v_tanggal),
-                    deskripsi:str(v_deskripsi),
-                    pemateri:str(v_pemateri),
-                    poster_path:str(v_poster_path),
-                    tempat:str(v_tempat),
-                    judul:str(v_judul)
-                })
-
-            result = {responseCode:"200", responseText:"success", responseList:data}
+                result = {responseCode:"200", responseText:"success", _id:v_id, tanggal:v_tanggal, deskripsi:v_deskripsi, poster_path:v_poster_path, tempat:v_tempat, judul:v_judul, pemateri:v_pemateri}
+            else:
+                result = {responseCode:"401", responseText:"Not found"}
         else:
             result = {responseCode:"401", responseText:"Ooppss..."}
     except Exception as e:

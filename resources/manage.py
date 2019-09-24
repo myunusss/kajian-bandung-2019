@@ -66,8 +66,45 @@ from common.app_setting import responseCode, responseList, responseText, detail,
 #     return result
 
 class AddKajian(Resource):
-  def get(self):
+  def post(self):
+    
+    if (request.form.get("session_token") != None):
+        session_token = request.form.get("session_token")
+    else:
+        session_token = ""
+
+    if (request.form.get("judul") != None):
+        judul = request.form.get("judul")
+    else:
+        judul = ""
+
+    if (request.form.get("tempat") != None):
+        tempat = request.form.get("tempat")
+    else:
+        tempat = ""
+
+    if (request.form.get("geo") != None):
+        geo = request.form.get("geo")
+    else:
+        geo = ""
+
+    if (request.form.get("deskripsi") != None):
+        deskripsi = request.form.get("deskripsi")
+    else:
+        deskripsi = ""
+
+    if (request.form.get("id_pemateri") != None):
+        id_pemateri = request.form.get("id_pemateri")
+    else:
+        id_pemateri = ""
+
+    if (request.form.get("poster_path") != None):
+        poster_path = request.form.get("poster_path")
+    else:
+        poster_path = ""
+
     conn, cur = ConnectDB()
+    
     try:
         result = {responseCode:"404", responseText:"Not found"}
     except Exception as e:

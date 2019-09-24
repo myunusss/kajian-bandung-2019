@@ -108,7 +108,8 @@ class AddKajian(Resource):
     try:
         if (session_token == '$2y$12$/Am4ByLydvLE4ra2pvGDUOkDWYRi5XObtfqH/SWpRJAnJY8/dzDsS'):
             cur.execute("insert into kajian (tanggal, judul, tempat, geo, deskripsi) values (current_timestamp, %s, %s, %s, %s)", [judul, tempat, geo, deskripsi])
-            # id_kajian = cur.fetchone()[0]
+            id_kajian = cur.fetchone()[0]
+            print('INI', id_kajian)
 
             # cur.execute("insert into kajian_pemateri (id_kajian, id_pemateri) values (%s, %s)", [id_kajian, id_pemateri])
             # cur.execute("insert into kajian_poster (id_kajian, poster_path) values (%s, %s)", [id_kajian, poster_path])

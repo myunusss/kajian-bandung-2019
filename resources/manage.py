@@ -106,10 +106,8 @@ class AddKajian(Resource):
     conn, cur = ConnectDB()
 
     try:
-        now = datetime.now()
-
         if (session_token == '$2y$12$/Am4ByLydvLE4ra2pvGDUOkDWYRi5XObtfqH/SWpRJAnJY8/dzDsS'):
-            cur.execute("insert into kajian (tanggal, judul, tempat, geo, deskripsi) values (%s, %s, %s, %s, %s)", [now, judul, tempat, geo, deskripsi])
+            cur.execute("insert into kajian (tanggal, judul, tempat, geo, deskripsi) values (%s, %s, %s, %s, %s)", ['2019-09-24 19:00:00', judul, tempat, geo, deskripsi])
             id_kajian = cur.fetchone()[0]
 
             cur.execute("insert into kajian_pemateri (id_kajian, id_pemateri) values (%s, %s)", [id_kajian, id_pemateri])

@@ -117,7 +117,7 @@ class AddKajian(Resource):
                 conn.commit()
                 result = {responseCode:"200", responseText:"success", _id:str(id_kajian)}
             else:
-                result = {responseCode:"401", responseText:"Please try again"}    
+                result = {responseCode:"401", responseText:"Please try again"}
         else:
             result = {responseCode:"401", responseText:"Ooppss..."}
 

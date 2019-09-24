@@ -111,13 +111,13 @@ class AddKajian(Resource):
             id_kajian = cur.fetchone()[0]
 
             cur.execute("insert into kajian_pemateri (id_kajian, id_pemateri) values (%s, %s)", [id_kajian, id_pemateri])
-            # cur.execute("insert into kajian_poster (id_kajian, poster_path) values (%s, %s)", [id_kajian, poster_path])
+            cur.execute("insert into kajian_poster (id_kajian, poster_path) values (%s, %s)", [id_kajian, poster_path])
 
-            # if (id_kajian !== None):
-            #     conn.commit()
-            #     result = {responseCode:"200", responseText:"success", _id:str(id_kajian)}
-            # else:
-            result = {responseCode:"401", responseText:"Please try again"}    
+            if (id_kajian !== None):
+                conn.commit()
+                result = {responseCode:"200", responseText:"success", _id:str(id_kajian)}
+            else:
+                result = {responseCode:"401", responseText:"Please try again"}    
         else:
             result = {responseCode:"401", responseText:"Ooppss..."}
 

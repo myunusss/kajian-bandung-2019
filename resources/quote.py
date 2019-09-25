@@ -48,7 +48,7 @@ class AllQuote(Resource):
             FMT_1 = '%Y-%m-%d'
             date_now = str(datetime.now().strftime(FMT_1))
 
-            cur.execute("select id_quote, poster_path, tanggal, deskripsi from quote where date(tanggal) = %s", [date_now])
+            cur.execute("select id_quote, poster_path, tanggal, deskripsi from quote")
             data = []
             for row in cur:
                 v_id = row[0]

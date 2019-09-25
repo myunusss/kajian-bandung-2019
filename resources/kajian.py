@@ -152,16 +152,22 @@ class Resume(Resource):
     conn, cur = ConnectDB()
     try:
         if (session_token == '$2y$12$/Am4ByLydvLE4ra2pvGDUOkDWYRi5XObtfqH/SWpRJAnJY8/dzDsS'):
+            now = datetime.now()
+            FMT_1 = '%Y'
+            year = str(now.strftime(FMT_1))
+            FMT_2 = '%m'
+            month = str(now.strftime(FMT_2))
+
             cur.execute("select id_kajian, tanggal, deskripsi, nama_pemateri, poster_path, tempat, judul, p.panggilan, resume " +
             "from kajian " +
             "inner join kajian_pemateri using (id_kajian) " +
             "inner join kajian_poster using (id_kajian) " +
             "inner join pemateri p using (id_pemateri) " +
-            "where resume is not null")
-            
-            row = cur.fetchone()
+            "where resume is not null and extract(year from tanggal) = %s and extract(month from tanggal) = %s", [year, month])
 
-            if (row != None):
+            data = []
+            
+            for row in cur:
                 v_id = row[0]
                 v_tanggal = row[1]
                 v_deskripsi = row[2]
@@ -171,7 +177,18 @@ class Resume(Resource):
                 v_pemateri = row[7] + ' ' + row[3]
                 v_resume = row[8]
 
-                result = {responseCode:"200", responseText:"success", _id:str(v_id), tanggal:str(v_tanggal), deskripsi:v_deskripsi, poster_path:v_poster_path, tempat:v_tempat, judul:v_judul, pemateri:str(v_pemateri), resume:resume}
+                data.append({
+                    _id: str(v_id),
+                    tanggal: str(v_tanggal),
+                    deskripsi: v_deskripsi,
+                    poster_path: v_poster_path,
+                    tempat: v_tempat,
+                    judul: v_judul,
+                    pemateri: v_pemateri,
+                    resume: v_resume
+                })
+
+                result = {responseCode:"200", responseText:"success", responseList:data}
             else:
                 result = {responseCode:"401", responseText:"Not found"}
         else:

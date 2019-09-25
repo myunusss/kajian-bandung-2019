@@ -104,17 +104,19 @@ class AddKajian(Resource):
         poster_path = ""
 
     conn, cur = ConnectDB()
-
     try:
         if (session_token == '$2y$12$/Am4ByLydvLE4ra2pvGDUOkDWYRi5XObtfqH/SWpRJAnJY8/dzDsS'):
             cur.execute("insert into kajian (tanggal, judul, tempat, geo, deskripsi) values (current_timestamp, %s, %s, %s, %s)", [judul, tempat, geo, deskripsi])
-            id_kajian = cur.fetchone()[0]
+            val = cur.fetchone()
 
-            cur.execute("insert into kajian_pemateri (id_kajian, id_pemateri) values (%s, %s)", [id_kajian, id_pemateri])
-            cur.execute("insert into kajian_poster (id_kajian, poster_path) values (%s, %s)", [id_kajian, poster_path])
+            print('INI',val)
 
-            if (id_kajian != None):
-                conn.commit()
+            if (val != None):
+                id_kajian = val[0]
+                cur.execute("insert into kajian_pemateri (id_kajian, id_pemateri) values (%s, %s)", [id_kajian, id_pemateri])
+                cur.execute("insert into kajian_poster (id_kajian, poster_path) values (%s, %s)", [id_kajian, poster_path])
+
+                # conn.commit()
                 result = {responseCode:"200", responseText:"success", _id:str(id_kajian)}
             else:
                 result = {responseCode:"401", responseText:"Please try again"}

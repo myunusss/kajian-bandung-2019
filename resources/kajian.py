@@ -188,9 +188,7 @@ class Resume(Resource):
                     resume: v_resume
                 })
 
-                result = {responseCode:"200", responseText:"success", responseList:data}
-            else:
-                result = {responseCode:"401", responseText:"Not found"}
+            result = {responseCode:"200", responseText:"success", responseList:data}
         else:
             result = {responseCode:"401", responseText:"Ooppss..."}
     except Exception as e:

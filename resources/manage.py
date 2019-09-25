@@ -2,7 +2,7 @@ from flask import Flask, request
 from flask_restful import Resource
 from dbconnect import ConnectDB, CloseDB
 from datetime import datetime
-from common.app_setting import responseCode, responseList, responseText, detail, _id
+from common.app_setting import responseCode, responseList, responseText, detail, _id, aktif, tanggal, poster_path, deskripsi, from_date, to_date, nama, panggilan, ig_akun
 
 class AddKajian(Resource):
   def post(self):
@@ -110,41 +110,144 @@ class AddPemateri(Resource):
         CloseDB(conn, cur)
     return result
 
-class AddIklan(Resource):
+class AllIklan(Resource):
   def post(self):
-    
     if (request.form.get("session_token") != None):
         session_token = request.form.get("session_token")
     else:
         session_token = ""
 
-    if (request.form.get("panggilan") != None):
-        panggilan = request.form.get("panggilan")
-    else:
-        panggilan = ""
+    conn, cur = ConnectDB()
+    try:
+        if (session_token == '$2y$12$/Am4ByLydvLE4ra2pvGDUOkDWYRi5XObtfqH/SWpRJAnJY8/dzDsS'):
+            cur.execute("select id_iklan, poster_path, deskripsi, from_date, to_date, aktif from iklan")
+            data = []
+            for row in cur:
+                v_id = row[0]
+                v_poster_path = row[1]
+                v_deskripsi = row[2]
+                v_from_date = row[3]
+                v_to_date = row[4]
+                v_aktif = row[5]
 
-    if (request.form.get("nama_pemateri") != None):
-        nama_pemateri = request.form.get("nama_pemateri")
+                data.append({
+                    _id:str(v_id),
+                    poster_path:str(v_poster_path),
+                    deskripsi:str(v_deskripsi),
+                    from_date:str(v_from_date),
+                    to_date:str(v_to_date),
+                    aktif:str(v_aktif)
+                })
+
+            result = {responseCode:"200", responseText:"success", responseList:data}
+        else:
+            result = {responseCode:"401", responseText:"Ooppss..."}
+    except Exception as e:
+        result = {responseCode:"404", responseText:"Not found", detail:str(e)}
+    finally:
+        CloseDB(conn, cur)
+    return result
+
+class AllQuote(Resource):
+  def post(self):
+    if (request.form.get("session_token") != None):
+        session_token = request.form.get("session_token")
     else:
-        nama_pemateri = ""
+        session_token = ""
 
     conn, cur = ConnectDB()
     try:
         if (session_token == '$2y$12$/Am4ByLydvLE4ra2pvGDUOkDWYRi5XObtfqH/SWpRJAnJY8/dzDsS'):
-            cur.execute("insert into pemateri (nama_pemateri, panggilan) values (%s, %s) RETURNING id_pemateri", [nama_pemateri, panggilan])
-            id_pemateri = cur.fetchone()[0]
+            cur.execute("select id_quote, poster_path, tanggal, deskripsi from quote")
+            data = []
+            for row in cur:
+                v_id = row[0]
+                v_poster_path = row[1]
+                v_tanggal = row[2]
+                v_deskripsi = row[3]
 
-            if (id_pemateri != None):
-                conn.commit()
-                result = {responseCode:"200", responseText:"success", _id:str(id_pemateri)}
-            else:
-                result = {responseCode:"401", responseText:"Please try again"}
+                data.append({
+                    _id:str(v_id),
+                    poster_path:str(v_poster_path),
+                    tanggal:str(v_tanggal),
+                    deskripsi:str(v_deskripsi)
+                })
+
+            result = {responseCode:"200", responseText:"success", responseList:data}
         else:
             result = {responseCode:"401", responseText:"Ooppss..."}
-
     except Exception as e:
         result = {responseCode:"404", responseText:"Not found", detail:str(e)}
-        conn.rollback()
+    finally:
+        CloseDB(conn, cur)
+    return result
+
+class AllPemateri(Resource):
+  def post(self):
+    if (request.form.get("session_token") != None):
+        session_token = request.form.get("session_token")
+    else:
+        session_token = ""
+
+    conn, cur = ConnectDB()
+    try:
+        if (session_token == '$2y$12$/Am4ByLydvLE4ra2pvGDUOkDWYRi5XObtfqH/SWpRJAnJY8/dzDsS'):
+            cur.execute("select id_pemateri, nama_pemateri, panggilan from pemateri")
+            data = []
+            for row in cur:
+                v_id = row[0]
+                v_nama = row[1]
+                v_panggilan = row[2]
+
+                data.append({
+                    _id:str(v_id),
+                    nama:str(v_nama),
+                    panggilan:str(v_panggilan)
+                })
+
+            result = {responseCode:"200", responseText:"success", responseList:data}
+        else:
+            result = {responseCode:"401", responseText:"Ooppss..."}
+    except Exception as e:
+        result = {responseCode:"404", responseText:"Not found", detail:str(e)}
+    finally:
+        CloseDB(conn, cur)
+    return result
+
+class AllKolaborasi(Resource):
+  def post(self):
+    if (request.form.get("session_token") != None):
+        session_token = request.form.get("session_token")
+    else:
+        session_token = ""
+
+    conn, cur = ConnectDB()
+    try:
+        if (session_token == '$2y$12$/Am4ByLydvLE4ra2pvGDUOkDWYRi5XObtfqH/SWpRJAnJY8/dzDsS'):
+            cur.execute("select id_kolaborasi, aktif, nama, poster_path, deskripsi, ig_aku from kolaborasi")
+            data = []
+            for row in cur:
+                v_id = row[0]
+                v_aktif = row[1]
+                v_nama = row[2]
+                v_poster_path = row[3]
+                v_deskripsi = row[4]
+                v_ig_akun = row[5]
+
+                data.append({
+                    _id:str(v_id),
+                    aktif:str(v_aktif),
+                    nama:str(v_nama),
+                    poster_path:str(v_poster_path),
+                    deskripsi:str(v_deskripsi),
+                    ig_akun:str(v_ig_akun)
+                })
+
+            result = {responseCode:"200", responseText:"success", responseList:data}
+        else:
+            result = {responseCode:"401", responseText:"Ooppss..."}
+    except Exception as e:
+        result = {responseCode:"404", responseText:"Not found", detail:str(e)}
     finally:
         CloseDB(conn, cur)
     return result

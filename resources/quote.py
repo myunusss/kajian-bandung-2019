@@ -26,7 +26,9 @@ class QuoteToday(Resource):
                 v_deskripsi = val[2]
                 v_tanggal = val[3]
 
-            result = {responseCode:"200", responseText:"success", poster_path:v_poster_path}
+                result = {responseCode:"200", responseText:"success", poster_path:v_poster_path}
+            else:
+                result = {responseCode:"200", responseText:"success", poster_path:"null"}
         else:
             result = {responseCode:"401", responseText:"Ooppss..."}
     except Exception as e:

@@ -125,6 +125,7 @@ class ListKajian(Resource):
                 data.append({
                     bulan: month_name,
                     tanggal: str(int(v_tanggal)),
+                    hari: str(day_name),
                     full_date: str(v_full_date)
                 })
 

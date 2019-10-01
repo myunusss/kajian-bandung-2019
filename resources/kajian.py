@@ -84,8 +84,10 @@ class DetailKajian(Resource):
                 v_tempat = row[5]
                 v_judul = row[6]
                 v_pemateri = row[7] + ' ' + row[3]
+                v_alamat = row[8]
+                v_geo = row[9]
 
-                result = {responseCode:"200", responseText:"success", _id:str(v_id), tanggal:str(v_tanggal), deskripsi:v_deskripsi, poster_path:v_poster_path, tempat:v_tempat, judul:v_judul, pemateri:str(v_pemateri)}
+                result = {responseCode:"200", responseText:"success", _id:str(v_id), tanggal:str(v_tanggal), deskripsi:v_deskripsi, poster_path:v_poster_path, tempat:v_tempat, judul:v_judul, pemateri:str(v_pemateri), alamat:str(v_alamat), geo:str(v_geo)}
             else:
                 result = {responseCode:"401", responseText:"Not found"}
         else:

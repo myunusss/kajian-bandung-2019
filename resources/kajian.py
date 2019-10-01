@@ -24,7 +24,7 @@ class Kajian(Resource):
             "inner join kajian_pemateri using (id_kajian) " +
             "inner join kajian_poster using (id_kajian) " +
             "inner join pemateri using (id_pemateri) " +
-            "where date(tanggal) = %s", [date])
+            "where date(tanggal) = %s order by tanggal", [date])
             
             data = []
 
@@ -67,7 +67,7 @@ class DetailKajian(Resource):
     conn, cur = ConnectDB()
     try:
         if (session_token == '$2y$12$/Am4ByLydvLE4ra2pvGDUOkDWYRi5XObtfqH/SWpRJAnJY8/dzDsS'):
-            cur.execute("select id_kajian, tanggal, deskripsi, nama_pemateri, poster_path, tempat, judul, p.panggilan " +
+            cur.execute("select id_kajian, tanggal, deskripsi, nama_pemateri, poster_path, tempat, judul, p.panggilan, alamat, geo " +
             "from kajian " +
             "inner join kajian_pemateri using (id_kajian) " +
             "inner join kajian_poster using (id_kajian) " +

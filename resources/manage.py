@@ -110,6 +110,80 @@ class AddPemateri(Resource):
         CloseDB(conn, cur)
     return result
 
+class AddInfo(Resource):
+  def post(self):
+    
+    if (request.form.get("session_token") != None):
+        session_token = request.form.get("session_token")
+    else:
+        session_token = ""
+
+    if (request.form.get("pesan") != None):
+        pesan = request.form.get("pesan")
+    else:
+        pesan = ""
+
+    if (request.form.get("aktif") != None):
+        aktif = request.form.get("aktif")
+    else:
+        aktif = ""
+
+    conn, cur = ConnectDB()
+    try:
+        if (session_token == '$2y$12$/Am4ByLydvLE4ra2pvGDUOkDWYRi5XObtfqH/SWpRJAnJY8/dzDsS'):
+            cur.execute("insert into info (pesan, aktif) values (%s, %s) RETURNING id_info", [pesan, aktif])
+            id_info = cur.fetchone()[0]
+
+            if (id_info != None):
+                conn.commit()
+                result = {responseCode:"200", responseText:"success", _id:str(id_info)}
+            else:
+                result = {responseCode:"401", responseText:"Please try again"}
+        else:
+            result = {responseCode:"401", responseText:"Ooppss..."}
+
+    except Exception as e:
+        result = {responseCode:"404", responseText:"Not found", detail:str(e)}
+        conn.rollback()
+    finally:
+        CloseDB(conn, cur)
+    return result
+
+class UpdateInfo(Resource):
+  def post(self):
+    
+    if (request.form.get("session_token") != None):
+        session_token = request.form.get("session_token")
+    else:
+        session_token = ""
+
+    if (request.form.get("id_pesan") != None):
+        id_pesan = request.form.get("id_pesan")
+    else:
+        id_pesan = ""
+
+    if (request.form.get("aktif") != None):
+        aktif = request.form.get("aktif")
+    else:
+        aktif = ""
+
+    conn, cur = ConnectDB()
+    try:
+        if (session_token == '$2y$12$/Am4ByLydvLE4ra2pvGDUOkDWYRi5XObtfqH/SWpRJAnJY8/dzDsS'):
+            cur.execute("update info set aktif = %s where id_pesan = %s ", [aktif, id_pesan])
+            cur.execute("update info set aktif = %s where id_pesan != %s ", [0, id_pesan])
+            conn.commit()
+            result = {responseCode:"200", responseText:"success", _id:str(id_pesan)}
+        else:
+            result = {responseCode:"401", responseText:"Ooppss..."}
+
+    except Exception as e:
+        result = {responseCode:"404", responseText:"Not found", detail:str(e)}
+        conn.rollback()
+    finally:
+        CloseDB(conn, cur)
+    return result
+
 class AllIklan(Resource):
   def post(self):
     if (request.form.get("session_token") != None):

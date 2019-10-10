@@ -61,12 +61,9 @@ class NewInfo(Resource):
                 v_pesan = row[0]
                 v_aktif = row[1]
 
-            result = {
-                responseCode:"200",
-                responseText:"success",
-                "pesan":str(v_pesan),
-                "aktif":str(v_aktif)
-            }
+                result = { responseCode:"200", responseText:"success", "pesan":str(v_pesan), "aktif":str(v_aktif) }
+            else:
+                result = {responseCode:"401", responseText:"Ooppss..."}
         else:
             result = {responseCode:"401", responseText:"Ooppss..."}
     except Exception as e:

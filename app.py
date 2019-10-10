@@ -5,7 +5,7 @@ from resources.kajian import Kajian, ListKajian, DetailKajian, Resume
 from resources.kolaborasi import Kolaborasi
 from resources.iklan import Iklan, NewInfo
 from resources.quote import QuoteToday, AllQuote
-from resources.manage import AddKajian, AddPemateri, AllIklan, AllKolaborasi, AllPemateri
+from resources.manage import AddKajian, AddPemateri, AllIklan, AllKolaborasi, AllPemateri, AddInfo, UpdateInfo
 
 app = Flask(__name__)
 api = Api(app)
@@ -25,6 +25,8 @@ api.add_resource(AllIklan, "/all/iklan")
 api.add_resource(AllKolaborasi, "/all/kolaborasi")
 api.add_resource(AllPemateri, "/all/pemateri")
 api.add_resource(NewInfo, "/new_info")
+api.add_resource(AddInfo, "/tambah/info")
+api.add_resource(UpdateInfo, "/update/info")
 
 if __name__ == "__main__":
   app.run()

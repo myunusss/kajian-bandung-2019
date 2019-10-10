@@ -3,7 +3,7 @@ from flask_restful import Api
 
 from resources.kajian import Kajian, ListKajian, DetailKajian, Resume
 from resources.kolaborasi import Kolaborasi
-from resources.iklan import Iklan
+from resources.iklan import Iklan, NewInfo
 from resources.quote import QuoteToday, AllQuote
 from resources.manage import AddKajian, AddPemateri, AllIklan, AllKolaborasi, AllPemateri
 
@@ -24,6 +24,7 @@ api.add_resource(AddPemateri, "/tambah/pemateri")
 api.add_resource(AllIklan, "/all/iklan")
 api.add_resource(AllKolaborasi, "/all/kolaborasi")
 api.add_resource(AllPemateri, "/all/pemateri")
+api.add_resource(NewInfo, "/new_info")
 
 if __name__ == "__main__":
   app.run()

@@ -190,7 +190,7 @@ class AllKolaborasi(Resource):
     conn, cur = ConnectDB()
     try:
         if (session_token == '$2y$12$/Am4ByLydvLE4ra2pvGDUOkDWYRi5XObtfqH/SWpRJAnJY8/dzDsS'):
-            cur.execute("select id_kolaborasi, aktif, nama, poster_path, deskripsi, ig_aku from kolaborasi")
+            cur.execute("select id_kolaborasi, aktif, nama, poster_path, deskripsi, ig_akun from kolaborasi")
             data = []
             for row in cur:
                 v_id = row[0]

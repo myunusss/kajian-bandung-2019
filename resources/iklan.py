@@ -42,3 +42,35 @@ class Iklan(Resource):
     finally:
         CloseDB(conn, cur)
     return result
+
+class NewInfo(Resource):
+  def post(self):
+    if (request.form.get("session_token") != None):
+        session_token = request.form.get("session_token")
+    else:
+        session_token = ""
+
+    conn, cur = ConnectDB()
+    try:
+        if (session_token == '$2y$12$/Am4ByLydvLE4ra2pvGDUOkDWYRi5XObtfqH/SWpRJAnJY8/dzDsS'):
+
+            cur.execute("select pesan, aktif from info where aktif = 1 limit 1")
+            row = cur.fetchone()
+
+            if (row != None):
+                v_pesan = row[0]
+                v_aktif = row[1]
+
+            result = {
+                responseCode:"200",
+                responseText:"success",
+                "pesan":str(v_pesan),
+                "aktif":str(v_aktif)
+            }
+        else:
+            result = {responseCode:"401", responseText:"Ooppss..."}
+    except Exception as e:
+        result = {responseCode:"404", responseText:"Not found", detail:str(e)}
+    finally:
+        CloseDB(conn, cur)
+    return result

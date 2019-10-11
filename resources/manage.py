@@ -157,10 +157,10 @@ class UpdateInfo(Resource):
     else:
         session_token = ""
 
-    if (request.form.get("id_pesan") != None):
-        id_pesan = request.form.get("id_pesan")
+    if (request.form.get("id_info") != None):
+        id_info = request.form.get("id_info")
     else:
-        id_pesan = ""
+        id_info = ""
 
     if (request.form.get("aktif") != None):
         aktif = request.form.get("aktif")
@@ -170,10 +170,10 @@ class UpdateInfo(Resource):
     conn, cur = ConnectDB()
     try:
         if (session_token == '$2y$12$/Am4ByLydvLE4ra2pvGDUOkDWYRi5XObtfqH/SWpRJAnJY8/dzDsS'):
-            cur.execute("update info set aktif = %s where id_pesan = %s ", [aktif, id_pesan])
-            cur.execute("update info set aktif = %s where id_pesan != %s ", [0, id_pesan])
+            cur.execute("update info set aktif = %s where id_info = %s ", [aktif, id_info])
+            cur.execute("update info set aktif = %s where id_info != %s ", [0, id_info])
             conn.commit()
-            result = {responseCode:"200", responseText:"success", _id:str(id_pesan)}
+            result = {responseCode:"200", responseText:"success", _id:str(id_info)}
         else:
             result = {responseCode:"401", responseText:"Ooppss..."}
 

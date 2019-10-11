@@ -47,10 +47,15 @@ class AddKajian(Resource):
     else:
         poster_path = ""
 
+    if (request.form.get("alamat") != None):
+        alamat = request.form.get("alamat")
+    else:
+        alamat = ""
+
     conn, cur = ConnectDB()
     try:
         if (session_token == '$2y$12$/Am4ByLydvLE4ra2pvGDUOkDWYRi5XObtfqH/SWpRJAnJY8/dzDsS'):
-            cur.execute("insert into kajian (tanggal, judul, tempat, geo, deskripsi) values (%s, %s, %s, %s, %s) RETURNING id_kajian", [waktu, judul, tempat, geo, deskripsi])
+            cur.execute("insert into kajian (tanggal, judul, tempat, geo, deskripsi, alamat) values (%s, %s, %s, %s, %s, %s) RETURNING id_kajian", [waktu, judul, tempat, geo, deskripsi, alamat])
             id_kajian = cur.fetchone()[0]
 
             if (id_kajian != None):

@@ -19,7 +19,7 @@ class Kajian(Resource):
     conn, cur = ConnectDB()
     try:
         if (session_token == '$2y$12$/Am4ByLydvLE4ra2pvGDUOkDWYRi5XObtfqH/SWpRJAnJY8/dzDsS'):
-            cur.execute("select id_kajian, tanggal, deskripsi, nama_pemateri, poster_path " +
+            cur.execute("select id_kajian, TO_CHAR(tanggal :: TIMESTAMP, 'dd Mon yyyy - HH24:MI'), deskripsi, nama_pemateri, poster_path " +
             "from kajian " +
             "inner join kajian_pemateri using (id_kajian) " +
             "inner join kajian_poster using (id_kajian) " +
@@ -67,7 +67,7 @@ class DetailKajian(Resource):
     conn, cur = ConnectDB()
     try:
         if (session_token == '$2y$12$/Am4ByLydvLE4ra2pvGDUOkDWYRi5XObtfqH/SWpRJAnJY8/dzDsS'):
-            cur.execute("select id_kajian, tanggal, deskripsi, nama_pemateri, poster_path, tempat, judul, p.panggilan, coalesce(alamat,'-'), geo " +
+            cur.execute("select id_kajian, TO_CHAR(tanggal :: TIMESTAMP, 'dd Mon yyyy - HH24:MI'), deskripsi, nama_pemateri, poster_path, tempat, judul, p.panggilan, coalesce(alamat,'-'), geo " +
             "from kajian " +
             "inner join kajian_pemateri using (id_kajian) " +
             "inner join kajian_poster using (id_kajian) " +

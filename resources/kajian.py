@@ -124,7 +124,23 @@ class ListKajian(Resource):
                 v_tanggal = row[0]
                 v_full_date = row[1]
 
-                day_name = str(v_full_date.strftime("%A"))
+                day = str(v_full_date.strftime("%A"))
+
+                day_name = ""
+                if (day == 'Sunday'):
+                    day_name = 'Minggu'
+                elif (day == 'Monday'):
+                    day_name = 'Senin'
+                elif (day == 'Tuesday'):
+                    day_name = 'Selasa'
+                elif (day == 'Wednesday'):
+                    day_name = 'Rabu'
+                elif (day == 'Thursday'):
+                    day_name = 'Kamis'
+                elif (day == 'Friday'):
+                    day_name = 'Jumat'
+                elif (day == 'Saturday'):
+                    day_name = 'Sabtu'
 
                 data.append({
                     bulan: month_name,

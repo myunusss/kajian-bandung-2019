@@ -113,7 +113,7 @@ class ListKajian(Resource):
             year = str(now.strftime(FMT_1))
             FMT_2 = '%m'
             month = str(now.strftime(FMT_2))
-            day_name = str(now.strftime("%A"))
+            # day_name = str(now.strftime("%A"))
             month_name = str(now.strftime("%B"))
 
             cur.execute("select distinct(date_part('day', tanggal)) as day_, date(tanggal) as full_date " + 
@@ -123,6 +123,8 @@ class ListKajian(Resource):
             for row in cur:
                 v_tanggal = row[0]
                 v_full_date = row[1]
+
+                day_name = str(v_full_date.strftime("%A"))
 
                 data.append({
                     bulan: month_name,

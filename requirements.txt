@@ -15,4 +15,4 @@ SQLAlchemy==1.2.15
 virtualenv==1.10.1
 virtualenv-clone==0.5.3
 virtualenvwrapper==4.8.4
-Werkzeug==0.14.1
+Werkzeug==0.15.3

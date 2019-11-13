@@ -104,15 +104,27 @@ class ListKajian(Resource):
         session_token = request.form.get("session_token")
     else:
         session_token = ""
+    
+    if (request.form.get("id_pemateri") != None):
+        id_pemateri = request.form.get("id_pemateri")
+    else:
+        id_pemateri = ""
 
     conn, cur = ConnectDB()
     try:
+        q_pemateri = " and id_pamateri = " + id_pemateri
+
         if (session_token == '$2y$12$/Am4ByLydvLE4ra2pvGDUOkDWYRi5XObtfqH/SWpRJAnJY8/dzDsS'):
             now = datetime.now()
             FMT_1 = '%Y'
             year = str(now.strftime(FMT_1))
             FMT_2 = '%m'
-            month = str(now.strftime(FMT_2))
+
+            if (id_pemateri != ''):
+                month = str(now.strftime(FMT_2)) + q_pemateri
+            else:
+                month = str(now.strftime(FMT_2))
+                
             # day_name = str(now.strftime("%A"))
             month_name = str(now.strftime("%B"))
 

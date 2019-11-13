@@ -233,11 +233,20 @@ class AllPemateri(Resource):
         session_token = request.form.get("session_token")
     else:
         session_token = ""
+    
+    if (request.form.get("query") != None):
+        query = request.form.get("query")
+    else:
+        query = ""
 
     conn, cur = ConnectDB()
     try:
+        name = '%' + query + '%'
+
         if (session_token == '$2y$12$/Am4ByLydvLE4ra2pvGDUOkDWYRi5XObtfqH/SWpRJAnJY8/dzDsS'):
-            cur.execute("select id_pemateri, nama_pemateri, panggilan from pemateri")
+            cur.execute("select id_pemateri, nama_pemateri, panggilan from pemateri " +
+            "where lower(nama_pemateri) like lower(%s)", [name])
+
             data = []
             for row in cur:
                 v_id = row[0]

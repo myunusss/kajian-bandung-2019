@@ -16,15 +16,25 @@ class Kajian(Resource):
     else:
         session_token = ""
 
+    if (request.form.get("id_pemateri") != None):
+        id_pemateri = request.form.get("id_pemateri")
+    else:
+        id_pemateri = ""
+
     conn, cur = ConnectDB()
     try:
+        if (id_pemateri != ""):
+            query = date + " and id_pemateri = " + id_pemateri
+        else:
+            query = date
+
         if (session_token == '$2y$12$/Am4ByLydvLE4ra2pvGDUOkDWYRi5XObtfqH/SWpRJAnJY8/dzDsS'):
             cur.execute("select id_kajian, TO_CHAR(tanggal :: TIMESTAMP, 'dd Mon yyyy - HH24:MI'), deskripsi, nama_pemateri, poster_path " +
             "from kajian " +
             "inner join kajian_pemateri using (id_kajian) " +
             "inner join kajian_poster using (id_kajian) " +
             "inner join pemateri using (id_pemateri) " +
-            "where date(tanggal) = %s order by tanggal", [date])
+            "where date(tanggal) = %s order by tanggal", [query])
             
             data = []
 
@@ -104,27 +114,15 @@ class ListKajian(Resource):
         session_token = request.form.get("session_token")
     else:
         session_token = ""
-    
-    if (request.form.get("id_pemateri") != None):
-        id_pemateri = request.form.get("id_pemateri")
-    else:
-        id_pemateri = ""
 
     conn, cur = ConnectDB()
     try:
-        q_pemateri = " and id_pamateri = " + id_pemateri
-
         if (session_token == '$2y$12$/Am4ByLydvLE4ra2pvGDUOkDWYRi5XObtfqH/SWpRJAnJY8/dzDsS'):
             now = datetime.now()
             FMT_1 = '%Y'
             year = str(now.strftime(FMT_1))
             FMT_2 = '%m'
-
-            if (id_pemateri != ''):
-                month = str(now.strftime(FMT_2)) + q_pemateri
-            else:
-                month = str(now.strftime(FMT_2))
-                
+            month = str(now.strftime(FMT_2))
             # day_name = str(now.strftime("%A"))
             month_name = str(now.strftime("%B"))
 
